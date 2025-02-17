@@ -34,7 +34,7 @@ server3       = 192.168.1.3
 # Sync
 
 Sync servers list between computers using github gist system, this way it stores servers list in private gist. On github navigate: Settings → Developer 
-Settings → Personal Access Token  →Tokens (classic) and Generate classic a token with gist speco copy it to **gistsecret**, Nagitate https://gist.github.com/ and 
+Settings → Personal Access Token  → Tokens (classic) and Generate a classic token with gist scope, copy it to **gistsecret**, Nagitate https://gist.github.com/ and 
 create secret gist, copy its id after **gist:** and put to **gistid**.
 
 Enable it in configuration:
@@ -43,7 +43,6 @@ Enable it in configuration:
 sync = true
 gistid = gist_id
 gistsecret = classic access token
-
 ```
 
 
