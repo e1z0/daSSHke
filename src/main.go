@@ -22,11 +22,31 @@ func main() {
 	// command line options
 	menu := flag.Bool("m", false, "Show menu")
 	conn := flag.String("c", "", "Connect to host, syntax user@host:port or host, example.: root@example.com:2222")
+	var push, pull *bool
+	if Settings.Sync {
+		push = flag.Bool("push", false, "Push server list changes to the github gist")
+		pull = flag.Bool("pull", false, "Pull server list changes from the github gist")
+	}
 	ver := flag.Bool("v", false, "Show version")
 	flag.Parse()
 
 	if *ver {
 		fmt.Printf("daSSHke %s\nCopyright (c) 2025 Justinas K. (e1z0@icloud.com)\n", version)
+		os.Exit(0)
+	}
+
+	if *push {
+		err = uploadToGist()
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+		}
+		os.Exit(0)
+	}
+	if *pull {
+		err = downloadFromGist()
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+		}
 		os.Exit(0)
 	}
 

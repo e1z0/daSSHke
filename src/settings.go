@@ -14,6 +14,9 @@ type Config struct {
 	LoadetcHosts bool
 	LoadsshHosts bool
 	AutoAddHosts bool
+	Sync         bool
+	GistID       string
+	GistSecret   string
 	ShowMenu     bool
 }
 
@@ -34,6 +37,33 @@ func FindIniHost(host string) (error, IniHost) {
 		}
 	}
 	return fmt.Errorf("Unable to find server in conf"), hst
+}
+
+func IniWrServers(servers []IniHost) error {
+	f := returnConfPath()
+	cfg, err := ini.LooseLoad(f) // Load file, create if missing
+	if err != nil {
+		return err
+	}
+
+	// Get or create the [servers] section
+	section, err := cfg.GetSection("servers")
+	if err != nil {
+		section, _ = cfg.NewSection("servers")
+	}
+
+	for _, key := range section.Keys() {
+		section.DeleteKey(key.Name())
+	}
+	for _, server := range servers {
+		section.Key(server.Hostname).SetValue(server.HostDetails)
+	}
+	// Save changes back to the file
+	err = cfg.SaveTo(f)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func AddHost(hostname string) {
@@ -74,6 +104,9 @@ func readSettings() error {
 		LoadetcHosts: cfg.Section("General").Key("loadetchosts").MustBool(false),
 		LoadsshHosts: cfg.Section("General").Key("loadsshhosts").MustBool(true),
 		AutoAddHosts: cfg.Section("General").Key("autoaddhosts").MustBool(true),
+		Sync:         cfg.Section("General").Key("sync").MustBool(false),
+		GistID:       cfg.Section("General").Key("gistid").MustString(""),
+		GistSecret:   cfg.Section("General").Key("gistsecret").MustString(""),
 		ShowMenu:     cfg.Section("UI").Key("showmenu").MustBool(false),
 	}
 	section := cfg.Section("servers")
