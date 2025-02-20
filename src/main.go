@@ -22,6 +22,7 @@ func main() {
 	// command line options
 	menu := flag.Bool("m", false, "Show menu")
 	conn := flag.String("c", "", "Connect to host, syntax user@host:port or host, example.: root@example.com:2222")
+	fzf := flag.Bool("f", false, "Fuzzy search testing using promptui...")
 	var push, pull *bool
 	if Settings.Sync {
 		push = flag.Bool("push", false, "Push server list changes to the github gist")
@@ -61,6 +62,11 @@ func main() {
 
 	if *menu {
 		Settings.ShowMenu = true
+	}
+
+	if *fzf {
+		fz()
+		os.Exit(0)
 	}
 
 	if Settings.ShowMenu {
