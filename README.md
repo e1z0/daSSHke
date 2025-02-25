@@ -18,13 +18,10 @@ It helps me, maybe it will help you too!
 Config file is located in `~/.config/daSSHke/settings.ini`
 
 ```
-[UI]
-showmenu = true # always show navigation in menu style
-
 [General]
-autoaddhosts = true # autoadd hosts to the config file section [servers] on the first connect.
+autoaddhosts = true  # autoadd hosts to the config file section [servers] on the first connect.
 loadsshhosts = false # load hosts from ~/.ssh/config
-loadetchosts = true # load hosts from /etc/hosts file
+loadetchosts = true  # load hosts from /etc/hosts file
 [servers]
 server1       = root@192.168.1.1:22
 server2       = root@192.168.1.2
