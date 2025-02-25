@@ -21,7 +21,7 @@ func main() {
 	options = GetHosts()
 	// command line options
 	menu := flag.Bool("m", false, "Show menu mode (legacy)")
-        cli := flag.Bool("t", false, "Show text mode (legacy)")
+	cli := flag.Bool("t", false, "Show text mode (legacy)")
 	conn := flag.String("c", "", "Connect to host, syntax user@host:port or host, example.: root@example.com:2222")
 	var push, pull *bool
 	if Settings.Sync {
@@ -36,22 +36,22 @@ func main() {
 		os.Exit(0)
 	}
 
-        if Settings.Sync {
-	if *push {
-		err = uploadToGist()
-		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+	if Settings.Sync {
+		if *push {
+			err = uploadToGist()
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
+			}
+			os.Exit(0)
 		}
-		os.Exit(0)
-	}
-	if *pull {
-		err = downloadFromGist()
-		if err != nil {
-			fmt.Printf("Error: %s\n", err)
+		if *pull {
+			err = downloadFromGist()
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
+			}
+			os.Exit(0)
 		}
-		os.Exit(0)
 	}
-        }
 
 	if *conn != "" {
 		// add host to internal list if enabled
@@ -62,38 +62,37 @@ func main() {
 		os.Exit(0)
 	}
 
-        if *menu {
-                p := tea.NewProgram(initialModel())
-                
-                finalModel, err := p.Run()
-                if err != nil {
-                        fmt.Fprintf(os.Stderr, "Error: %v", err)
-                        os.Exit(1)
-                }
-                
-                // Extract selected hostname and print it
-                if m, ok := finalModel.(model); ok && m.selected != "" {
-                        sshHost(m.selected)
-                }
-                return
-        }
+	if *menu {
+		p := tea.NewProgram(initialModel())
 
-        if *cli {
-                p := tea.NewProgram(initialAutocompleteModel())
-                
-                finalModel, err := p.Run()
-                if err != nil {
-                        fmt.Fprintf(os.Stderr, "Error: %v", err)
-                        os.Exit(1)
-                }
-                 
-                // Extract selected hostname and print it
-                if m, ok := finalModel.(autocompletemodel); ok && m.selected != "" {
-                        sshHost(m.selected)
-                }
-                return
-        }
+		finalModel, err := p.Run()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v", err)
+			os.Exit(1)
+		}
 
+		// Extract selected hostname and print it
+		if m, ok := finalModel.(model); ok && m.selected != "" {
+			sshHost(m.selected)
+		}
+		return
+	}
+
+	if *cli {
+		p := tea.NewProgram(initialAutocompleteModel())
+
+		finalModel, err := p.Run()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v", err)
+			os.Exit(1)
+		}
+
+		// Extract selected hostname and print it
+		if m, ok := finalModel.(autocompletemodel); ok && m.selected != "" {
+			sshHost(m.selected)
+		}
+		return
+	}
 
 	fz()
 }
