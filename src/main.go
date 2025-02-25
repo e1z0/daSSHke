@@ -36,6 +36,7 @@ func main() {
 		os.Exit(0)
 	}
 
+        if Settings.Sync {
 	if *push {
 		err = uploadToGist()
 		if err != nil {
@@ -50,6 +51,7 @@ func main() {
 		}
 		os.Exit(0)
 	}
+        }
 
 	if *conn != "" {
 		// add host to internal list if enabled
