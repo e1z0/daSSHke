@@ -14,9 +14,8 @@ format:
 clean:
 	rm -f $(BINARY)
 release: check-rel-dir
-	GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)" -o $(REL_DIR)/$(REL_LINUX_BIN) $(SRC) 
-	GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=$(VERSION)" -o $(REL_DIR)/$(REL_MACOS_BIN) $(SRC)
-
+	GOOS=linux GOARCH=amd64 go build -tags netgo -ldflags "-w -s -buildid= -extldflags -static -X main.version=$(VERSION)" -o $(REL_DIR)/$(REL_LINUX_BIN) $(SRC) 
+	GOOS=darwin GOARCH=amd64 go build -tags netgo -ldflags "-w -s -buildid= -extldflags -static -X main.version=$(VERSION)" -o $(REL_DIR)/$(REL_MACOS_BIN) $(SRC)
 
 check-rel-dir:
 	@if [ ! -d "$(REL_DIR)" ]; then \

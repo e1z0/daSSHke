@@ -17,7 +17,6 @@ type Config struct {
 	Sync         bool
 	GistID       string
 	GistSecret   string
-	ShowMenu     bool
 }
 
 type IniHost struct {
@@ -107,7 +106,6 @@ func readSettings() error {
 		Sync:         cfg.Section("General").Key("sync").MustBool(false),
 		GistID:       cfg.Section("General").Key("gistid").MustString(""),
 		GistSecret:   cfg.Section("General").Key("gistsecret").MustString(""),
-		ShowMenu:     cfg.Section("UI").Key("showmenu").MustBool(false),
 	}
 	section := cfg.Section("servers")
 	for _, key := range section.Keys() {

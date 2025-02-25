@@ -20,9 +20,9 @@ func main() {
 	}
 	options = GetHosts()
 	// command line options
-	menu := flag.Bool("m", false, "Show menu")
+	menu := flag.Bool("m", false, "Show menu mode (legacy)")
+        cli := flag.Bool("t", false, "Show text mode (legacy)")
 	conn := flag.String("c", "", "Connect to host, syntax user@host:port or host, example.: root@example.com:2222")
-	fzf := flag.Bool("f", false, "Fuzzy search testing using promptui...")
 	var push, pull *bool
 	if Settings.Sync {
 		push = flag.Bool("push", false, "Push server list changes to the github gist")
@@ -62,43 +62,38 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *menu {
-		Settings.ShowMenu = true
-	}
+        if *menu {
+                p := tea.NewProgram(initialModel())
+                
+                finalModel, err := p.Run()
+                if err != nil {
+                        fmt.Fprintf(os.Stderr, "Error: %v", err)
+                        os.Exit(1)
+                }
+                
+                // Extract selected hostname and print it
+                if m, ok := finalModel.(model); ok && m.selected != "" {
+                        sshHost(m.selected)
+                }
+                return
+        }
 
-	if *fzf {
-		fz()
-		os.Exit(0)
-	}
+        if *cli {
+                p := tea.NewProgram(initialAutocompleteModel())
+                
+                finalModel, err := p.Run()
+                if err != nil {
+                        fmt.Fprintf(os.Stderr, "Error: %v", err)
+                        os.Exit(1)
+                }
+                 
+                // Extract selected hostname and print it
+                if m, ok := finalModel.(autocompletemodel); ok && m.selected != "" {
+                        sshHost(m.selected)
+                }
+                return
+        }
 
-	if Settings.ShowMenu {
-		p := tea.NewProgram(initialModel())
 
-		finalModel, err := p.Run()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v", err)
-			os.Exit(1)
-		}
-
-		// Extract selected hostname and print it
-		if m, ok := finalModel.(model); ok && m.selected != "" {
-			sshHost(m.selected)
-		}
-
-	} else {
-
-		p := tea.NewProgram(initialAutocompleteModel())
-
-		finalModel, err := p.Run()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v", err)
-			os.Exit(1)
-		}
-
-		// Extract selected hostname and print it
-		if m, ok := finalModel.(autocompletemodel); ok && m.selected != "" {
-			sshHost(m.selected)
-		}
-
-	}
+	fz()
 }

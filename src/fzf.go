@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/chzyer/readline"
 	"github.com/lithammer/fuzzysearch/fuzzy"
-	"github.com/manifoldco/promptui"
+        "github.com/e1z0/promptui"
 	"strings"
+        "os"
 )
 
 var NoBellStdout = &noBellStdout{}
@@ -44,15 +45,24 @@ func searchHosts(input string) []string {
 	return results
 }
 
+func checkPromptError(err error) {
+	if err.Error() == "^D" {
+		fmt.Printf("Sorry, <Del> not supported\n")
+	} else if err.Error() == "^C" {
+		os.Exit(1)
+	} else {
+                fmt.Printf("Terminating...\n")
+	}
+}
+
 func fz() {
-	fmt.Println("🔍 Search SSH Host (Type to filter, use arrow keys to select)")
+	fmt.Println("🔍 Select an SSH host (type / to filter, use arrow keys to navigate, press q to quit)")
 
 	templates := &promptui.SelectTemplates{
-		Label: "{{ . }}?",
-		//Active:   "\U0001F336  ({{ . | cyan }})",
-		Active:   "🔥 ({{ . | cyan }})",
+		Label: "{{ . }}: ",
+		Active:   "\U0001F7E2 ({{ . | cyan }})",
 		Inactive: "  {{ . | cyan }}",
-		Selected: "🔥 {{ . | red | cyan }}",
+		Selected: "\U0001F7E2 {{ . | red | cyan }}",
 	}
 
 	// Get filtered results based on user input
@@ -60,6 +70,7 @@ func fz() {
 		Stdout:    NoBellStdout,
 		Label:     "Select Host",
 		Size:      20,
+                HideHelp:  true,
 		Templates: templates,
 		Items:     options, // Start with full list
 		Searcher: func(input string, index int) bool {
@@ -70,11 +81,15 @@ func fz() {
 
 	_, selectedHost, err := prompt.Run()
 	if err != nil {
-		fmt.Println("❌ Selection canceled")
+		fmt.Printf("\n❌ Selection canceled\n")
+                checkPromptError(err)
 		return
 	}
 
-	fmt.Println("✅ Selected Host:", selectedHost)
+	if selectedHost == "q" {
+		fmt.Println("Quitting...")
+		return
+	}
 	sshHost(selectedHost)
 
 }
