@@ -42,4 +42,9 @@ gistid = gist_id
 gistsecret = classic access token
 ```
 
+# Building from source
+
+- Download and install latest [golang](https://go.dev)
+- run `make`
+- Thats all, it will generate the `sshke` binary.
 
