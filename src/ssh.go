@@ -122,13 +122,29 @@ func sshHost(hostname string) error {
 		hostname = hostval.HostDetails
 	}
 
+        
+        sshConfig :=filepath.Join(os.Getenv("HOME"), ".ssh", "config")
+        
+
+
 	user, host, port := parseSSHHost(hostname)
 	// Construct the SSH command arguments
 	sshArgs := []string{}
 	if port != "" {
 		sshArgs = append(sshArgs, "-p", port)
 	}
-	sshArgs = append(sshArgs, fmt.Sprintf("%s@%s", user, host))
+        ssh_config := false
+        // check if user's ssh config exist and then pass paramater to ssh to load it
+        if _, err := os.Stat(sshConfig); err == nil {
+                 ssh_config = true
+                 sshArgs = append(sshArgs, "-F",sshConfig)
+        }
+        //sshArgs = append(sshArgs, "-v")
+        if ssh_config {
+                 sshArgs = append(sshArgs, host)
+        } else { 
+	         sshArgs = append(sshArgs, fmt.Sprintf("%s@%s", user, host))
+        }
 	fmt.Printf("\nEstablishing connection to: %s\n\n", hostname)
 	cmd := exec.Command("ssh", sshArgs...)
 	// Attach standard input/output
