@@ -90,9 +90,9 @@ func GetetcHosts() (error, []string) {
 // parseSSHHost extracts user, host, and port from the input string
 func parseSSHHost(input string) (string, string, string) {
 	// Default values
-	user := "root" // Default SSH user
+	user := "" // Default SSH user
 	host := ""
-	port := "22" // Default SSH port (empty means use system default)
+	port := "" // Default SSH port (empty means use system default)
 
 	// Regex pattern to match [user@]host[:port]
 	re := regexp.MustCompile(`^(?:(\w+)@)?([\w\.-]+)(?::(\d+))?$`)
@@ -133,19 +133,21 @@ func sshHost(hostname string) error {
 	if port != "" {
 		sshArgs = append(sshArgs, "-p", port)
 	}
-        ssh_config := false
         // check if user's ssh config exist and then pass paramater to ssh to load it
         if _, err := os.Stat(sshConfig); err == nil {
-                 ssh_config = true
                  sshArgs = append(sshArgs, "-F",sshConfig)
         }
         //sshArgs = append(sshArgs, "-v")
-        if ssh_config {
+        if user != "" {
+                 sshArgs = append(sshArgs, fmt.Sprintf("%s@%s", user, host))
+        } else {
                  sshArgs = append(sshArgs, host)
-        } else { 
-	         sshArgs = append(sshArgs, fmt.Sprintf("%s@%s", user, host))
+        }
+        if port != "" {
+                 sshArgs = append(sshArgs, "-p",port)
         }
 	fmt.Printf("\nEstablishing connection to: %s\n\n", hostname)
+        fmt.Printf("ssh args: %#v\n",sshArgs)
 	cmd := exec.Command("ssh", sshArgs...)
 	// Attach standard input/output
 	cmd.Stdin = os.Stdin
