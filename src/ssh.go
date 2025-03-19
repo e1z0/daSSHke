@@ -147,7 +147,6 @@ func sshHost(hostname string) error {
                  sshArgs = append(sshArgs, "-p",port)
         }
 	fmt.Printf("\nEstablishing connection to: %s\n\n", hostname)
-        fmt.Printf("ssh args: %#v\n",sshArgs)
 	cmd := exec.Command("ssh", sshArgs...)
 	// Attach standard input/output
 	cmd.Stdin = os.Stdin
